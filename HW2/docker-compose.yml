@@ -1,0 +1,18 @@
+version: '3.1'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  mongodb:
+    image: 'mongo'
+    networks:
+      - app-tier
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: wtP3zWV3t7mvzjf
+    volumes:
+      - ./:/mnt/import
+    ports:
+      - 27017:27017
