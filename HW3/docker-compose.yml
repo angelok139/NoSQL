@@ -1,0 +1,163 @@
+version: '3.8'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  mongos:
+    image: 'mongo'
+    container_name: mongo-s
+    networks:
+      - app-tier
+    command: mongos --configdb CRS1/mongo-cfg1:27019,mongo-cfg2:27019,mongo-cfg3:27019 --bind_ip_all --keyFile /opt/keyfile.key
+    volumes:
+      - ./keyfile.key:/opt/keyfile.key
+    ports:
+      - 27017:27017
+
+  mongocfg1:
+    image: 'mongo'
+    container_name: mongo-cfg1
+    networks:
+      - app-tier
+    command: ["--configsvr", "--replSet", "CRS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37017:27019
+    volumes:
+      - ./db/cdb/db1:/data/configdb
+      - ./keyfile.key:/opt/keyfile.key
+
+
+  mongocfg2:
+    image: 'mongo'
+    container_name: mongo-cfg2
+    networks:
+      - app-tier
+    command: ["--configsvr", "--replSet", "CRS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37018:27019
+    volumes:
+      - ./db/cdb/db2:/data/configdb
+      - ./keyfile.key:/opt/keyfile.key
+
+
+  mongocfg3:
+    image: 'mongo'
+    container_name: mongo-cfg3
+    networks:
+      - app-tier
+    command: ["--configsvr", "--replSet", "CRS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37019:27019
+    volumes:
+      - ./db/cdb/db3:/data/configdb
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors1-1:
+    image: 'mongo'
+    container_name: mongo-rs1-1
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37027:27018
+    volumes:
+      - ./db/rs1/db1:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors1-2:
+    image: 'mongo'
+    container_name: mongo-rs1-2
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37028:27018
+    volumes:
+      - ./db/rs1/db2:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors1-3:
+    image: 'mongo'
+    container_name: mongo-rs1-3
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS1", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37029:27018
+    volumes:
+      - ./db/rs1/db3:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors2-1:
+    image: 'mongo'
+    container_name: mongo-rs2-1
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS2", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"] # , "--auth", "--keyFile","/opt/keyfile.key"
+    ports:
+      - 37037:27018
+    volumes:
+      - ./db/rs2/db1:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors2-2:
+    image: 'mongo'
+    container_name: mongo-rs2-2
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS2", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37038:27018
+    volumes:
+      - ./db/rs2/db2:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors2-3:
+    image: 'mongo'
+    container_name: mongo-rs2-3
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS2", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37039:27018
+    volumes:
+      - ./db/rs2/db3:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors3-1:
+    image: 'mongo'
+    container_name: mongo-rs3-1
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS3", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37047:27018
+    volumes:
+      - ./db/rs3/db1:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors3-2:
+    image: 'mongo'
+    container_name: mongo-rs3-2
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS3", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37048:27018
+    volumes:
+      - ./db/rs3/db2:/data/db
+      - ./keyfile.key:/opt/keyfile.key
+
+  mongors3-3:
+    image: 'mongo'
+    container_name: mongo-rs3-3
+    networks:
+      - app-tier
+    command: ["--shardsvr", "--replSet", "RS3", "--bind_ip_all", "--auth", "--keyFile","/opt/keyfile.key"]
+    ports:
+      - 37049:27018
+    volumes:
+      - ./db/rs3/db3:/data/db
+      - ./keyfile.key:/opt/keyfile.key
