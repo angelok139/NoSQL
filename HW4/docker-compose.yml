@@ -1,0 +1,43 @@
+version: '3.8'
+
+networks:
+  app-tier:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/24
+          gateway: 172.16.0.1
+
+
+services:
+  couchbase1:
+    image: 'couchbase:enterprise'
+    container_name: couchbase1
+    networks:
+      app-tier:
+        ipv4_address: 172.16.0.2
+    ports:
+      - 18091:18091
+
+  couchbase2:
+    image: 'couchbase:enterprise'
+    container_name: couchbase2
+    networks:
+      app-tier:
+        ipv4_address: 172.16.0.3
+  
+  couchbase3:
+    image: 'couchbase:enterprise'
+    container_name: couchbase3
+    networks:
+      app-tier:
+        ipv4_address: 172.16.0.4
+  
+
+  couchbase4:
+    image: 'couchbase:enterprise'
+    container_name: couchbase4
+    networks:
+      app-tier:
+        ipv4_address: 172.16.0.5
+    
