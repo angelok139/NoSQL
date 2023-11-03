@@ -1,0 +1,82 @@
+version: '3.8'
+
+networks:
+  app-tier:
+    driver: bridge
+
+
+services:
+  clickhouse1:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse1
+    volumes:
+      - ./cluster-config.xml:/etc/clickhouse-server/config.d/cluster-config.xml
+    networks:
+      - app-tier
+    ports:
+      - 18123:8123
+      - 19000:9000
+  clickhouse2:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse2
+    networks:
+      - app-tier
+    volumes:
+      - ./cluster-config.xml:/etc/clickhouse-server/config.d/cluster-config.xml
+    ports:
+      - 18124:8123
+      - 19001:9000
+  clickhouse3:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse3
+    networks:
+      - app-tier
+    volumes:
+      - ./cluster-config.xml:/etc/clickhouse-server/config.d/cluster-config.xml
+    ports:
+      - 18125:8123
+      - 19002:9000
+
+
+  zoo1:
+    image: zookeeper:3.8
+    restart: always
+    hostname: zoo1
+    container_name: zoo1
+    networks:
+      - app-tier
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_4LW_COMMANDS_WHITELIST: '*'
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo2:
+    image: zookeeper:3.8
+    restart: always
+    hostname: zoo2
+    container_name: zoo2
+    networks:
+      - app-tier
+    ports:
+      - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_4LW_COMMANDS_WHITELIST: '*'
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo3:
+    image: zookeeper:3.8
+    restart: always
+    hostname: zoo3
+    container_name: zoo3
+    networks:
+      - app-tier
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_4LW_COMMANDS_WHITELIST: '*'
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
