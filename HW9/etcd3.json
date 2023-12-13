@@ -1,0 +1,16 @@
+{
+    "service": {
+        "id": "etcd3",
+        "name": "etcd",
+        "tags": [ "etcd" ],
+        "port": 2379,
+        "enable_tag_override": false,
+        "check": {
+            "id": "etcd_up",
+            "name": "etcd healthcheck",
+            "tcp": "etcd3:2379",
+            "interval": "10s",
+            "timeout": "2s"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "bind_addr": "0.0.0.0",
+    "server": true,
+    "enable_script_checks": true,
+    "enable_local_script_checks": true,
+    "retry_join": ["consul1","consul2","consul3"]
+}
