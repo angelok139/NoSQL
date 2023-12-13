@@ -1,0 +1,101 @@
+version: '3.8'
+
+networks:
+  app-tier:
+    driver: bridge
+
+
+services:
+  etcd1:
+    image: bitnami/etcd
+    container_name: etcd1
+    networks:
+      - app-tier
+    ports:
+      - 12379:2379
+      - 12380:2380
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd1
+      - ETCD_AUTO_TLS=true
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd1:2380
+      - ETCD_INITIAL_CLUSTER_TOKEN=cluster1
+      - ETCD_INITIAL_CLUSTER=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+  etcd2:
+    image: bitnami/etcd
+    container_name: etcd2
+    networks:
+      - app-tier
+    ports:
+      - 22379:2379
+      - 22380:2380
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd2
+      - ETCD_AUTO_TLS=true
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd2:2380
+      - ETCD_INITIAL_CLUSTER_TOKEN=cluster1
+      - ETCD_INITIAL_CLUSTER=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+  etcd3:
+    image: bitnami/etcd
+    container_name: etcd3
+    networks:
+      - app-tier
+    ports:
+      - 32379:2379
+      - 32380:2380
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcd3
+      - ETCD_AUTO_TLS=true
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd1:2379,http://etcd2:2379,http://etcd3:2379
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd3:2380
+      - ETCD_INITIAL_CLUSTER_TOKEN=cluster1
+      - ETCD_INITIAL_CLUSTER=etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+
+  consul1:
+    image: hashicorp/consul
+    container_name: consul1
+    volumes:
+      - ./consul.json:/consul/config/server.json
+      - ./etcd1.json:/consul/config/etcd-check.json
+    networks:
+      - app-tier
+    ports:
+      - 8500:8500
+      - 8600:8600/tcp
+      - 8600:8600/udp
+    
+  consul2:
+    image: hashicorp/consul
+    container_name: consul2
+    networks:
+      - app-tier
+    volumes:
+      - ./consul.json:/consul/config/server.json
+      - ./etcd2.json:/consul/config/etcd-check.json
+    ports:
+      - 28500:8500
+      - 28600:8600/tcp
+      - 28600:8600/udp
+
+  consul3:
+    image: hashicorp/consul
+    container_name: consul3
+    networks:
+      - app-tier
+    volumes:
+      - ./consul.json:/consul/config/server.json
+      - ./etcd3.json:/consul/config/etcd-check.json
+    ports:
+      - 38500:8500
+      - 38600:8600/tcp
+      - 38600:8600/udp
